@@ -9,6 +9,7 @@ import java.util.List;
 
 @Service
 public class ProductService {
+
     @Autowired
     private ProductRepository repository;
 
@@ -32,18 +33,24 @@ public class ProductService {
         return repository.findByName(name);
     }
 
-    public String deleteProduct(int id) {
-        repository.deleteById(id);
-        return "product removed !! " + id;
-    }
-
     public Product updateProduct(Product product) {
         Product existingProduct = repository.findById(product.getId()).orElse(null);
-        existingProduct.setName(product.getName());
-        existingProduct.setQuantity(product.getQuantity());
-        existingProduct.setPrice(product.getPrice());
-        return repository.save(existingProduct);
+        if (existingProduct != null) {
+            existingProduct.setName(product.getName());
+            existingProduct.setPrice(product.getPrice());
+            existingProduct.setQuantity(product.getQuantity());
+            return repository.save(existingProduct);
+        }
+        return null;
     }
 
+    public String deleteProduct(int id) {
+        repository.deleteById(id);
+        return "Product removed! ID: " + id;
+    }
 
+    // ✅ Advanced Search Method
+    public List<Product> advancedSearch(String name, Double minPrice, Double maxPrice) {
+        return repository.advancedSearch(name, minPrice, maxPrice);
+    }
 }
