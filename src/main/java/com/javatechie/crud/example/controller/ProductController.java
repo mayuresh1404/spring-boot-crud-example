@@ -3,8 +3,10 @@ package com.javatechie.crud.example.controller;
 import com.javatechie.crud.example.entity.Product;
 import com.javatechie.crud.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -46,5 +48,20 @@ public class ProductController {
     @DeleteMapping("/delete/{id}")
     public String deleteProduct(@PathVariable int id) {
         return service.deleteProduct(id);
+    }
+
+    // ✅ Added Advanced Search API
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> advancedSearch(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice) {
+
+        if (name == null && minPrice == null && maxPrice == null) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+
+        List<Product> products = service.advancedSearch(name, minPrice, maxPrice);
+        return ResponseEntity.ok(products);
     }
 }
